@@ -8,12 +8,14 @@ import (
 	"net/http"
 
 	api "github.com/gogs/go-gogs-client"
+	"github.com/unknwon/com"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/db"
 	"gogs.io/gogs/internal/email"
+	"gogs.io/gogs/internal/markup"
 	"gogs.io/gogs/internal/route/api/v1/user"
 )
 
@@ -34,6 +36,44 @@ func parseLoginSource(c *context.APIContext, u *db.User, sourceID int64, loginNa
 
 	u.LoginSource = source.ID
 	u.LoginName = loginName
+}
+
+func SearchUser(c *context.APIContext) {
+	opts := &db.SearchUserOptions{
+		Keyword:  c.Query("q"),
+		Type:     db.UserIndividual,
+		PageSize: com.StrTo(c.Query("limit")).MustInt(),
+	}
+	if opts.PageSize == 0 {
+		opts.PageSize = 10
+	}
+
+	users, _, err := db.SearchAllUser(opts)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"ok":    false,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	results := make([]*api.User, len(users))
+	for i := range users {
+		results[i] = &api.User{
+			ID:        users[i].ID,
+			UserName:  users[i].Name,
+			AvatarUrl: users[i].AvatarLink(),
+			FullName:  markup.Sanitize(users[i].FullName),
+		}
+		if c.IsLogged {
+			results[i].Email = users[i].Email
+		}
+	}
+
+	c.JSONSuccess(map[string]interface{}{
+		"ok":   true,
+		"data": results,
+	})
 }
 
 func CreateUser(c *context.APIContext, form api.CreateUserOption) {

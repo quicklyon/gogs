@@ -25,6 +25,7 @@ type PullRequestMeta struct {
 }
 
 func (module) PullRequestMeta(headPath, basePath, headBranch, baseBranch string) (*PullRequestMeta, error) {
+	log.Info("Fetching pull request meta: headPath: %s, %s", headPath, basePath)
 	tmpRemoteBranch := baseBranch
 
 	// We need to create a temporary remote when the pull request is sent from a forked repository.

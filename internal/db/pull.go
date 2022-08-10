@@ -119,6 +119,29 @@ func (pr *PullRequest) LoadAttributes() error {
 	return pr.loadAttributes(x)
 }
 
+func (pr *PullRequest) getHeadRepo(e Engine) (err error) {
+	pr.HeadRepo, err = getRepositoryByID(e, pr.HeadRepoID)
+	if err != nil && !IsErrRepoNotExist(err) {
+		return fmt.Errorf("getRepositoryByID(head): %v", err)
+	}
+	return nil
+}
+
+func (pr *PullRequest) GetHeadRepo() error {
+	return pr.getHeadRepo(x)
+}
+
+func (pr *PullRequest) GetBaseRepo() (err error) {
+	if pr.BaseRepo != nil {
+		return nil
+	}
+	pr.BaseRepo, err = GetRepositoryByID(pr.BaseRepoID)
+	if err != nil {
+		return fmt.Errorf("GetRepositoryByID(base): %v", err)
+	}
+	return nil
+}
+
 func (pr *PullRequest) LoadIssue() (err error) {
 	if pr.Issue != nil {
 		return nil
@@ -518,6 +541,46 @@ func NewPullRequest(repo *Repository, pull *Issue, labelIDs []int64, uuids []str
 	return nil
 }
 
+// PullRequestsOptions holds the options for PRs
+type PullRequestsOptions struct {
+	Page        int
+	State       string
+	SortType    string
+	Labels      []string
+	MilestoneID int64
+}
+
+func listPullRequestStatement(baseRepoID int64, opts *PullRequestsOptions) *xorm.Session {
+	sess := x.Where("pull_request.base_repo_id=?", baseRepoID)
+
+	sess.Join("INNER", "issue", "pull_request.issue_id = issue.id")
+	switch opts.State {
+	case "closed", "open":
+		sess.And("issue.is_closed=?", opts.State == "closed")
+	}
+
+	return sess
+}
+
+// PullRequests returns all pull requests for a base Repo by the given conditions
+func PullRequests(baseRepoID int64, opts *PullRequestsOptions) ([]*PullRequest, int64, error) {
+	if opts.Page <= 0 {
+		opts.Page = 1
+	}
+
+	countSession := listPullRequestStatement(baseRepoID, opts)
+	maxResults, err := countSession.Count(new(PullRequest))
+	if err != nil {
+		log.Error("Count PRs: %v", err)
+		return nil, maxResults, err
+	}
+
+	prs := make([]*PullRequest, 0, ItemsPerPage)
+	findSession := listPullRequestStatement(baseRepoID, opts)
+	findSession.Limit(ItemsPerPage, (opts.Page-1)*ItemsPerPage)
+	return prs, maxResults, findSession.Find(&prs)
+}
+
 // GetUnmergedPullRequest returns a pull request that is open and has not been merged
 // by given head/base and repo/branch.
 func GetUnmergedPullRequest(headRepoID, baseRepoID int64, headBranch, baseBranch string) (*PullRequest, error) {
@@ -574,6 +637,30 @@ func (err ErrPullRequestNotExist) Error() string {
 
 func (ErrPullRequestNotExist) NotFound() bool {
 	return true
+}
+
+// GetPullRequestByIndex returns a pull request by the given index
+func GetPullRequestByIndex(repoID int64, index int64) (*PullRequest, error) {
+	pr := &PullRequest{
+		BaseRepoID: repoID,
+		Index:      index,
+	}
+
+	has, err := x.Get(pr)
+	if err != nil {
+		return nil, err
+	} else if !has {
+		return nil, ErrPullRequestNotExist{args: map[string]interface{}{"ID": 0, "IssueID": 0}}
+	}
+
+	if err = pr.LoadAttributes(); err != nil {
+		return nil, err
+	}
+	if err = pr.LoadIssue(); err != nil {
+		return nil, err
+	}
+
+	return pr, nil
 }
 
 func getPullRequestByID(e Engine, id int64) (*PullRequest, error) {

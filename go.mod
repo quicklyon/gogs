@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
+	github.com/davecgh/go-spew v1.1.1
 	github.com/derision-test/go-mockgen v1.3.3
 	github.com/editorconfig/editorconfig-core-go/v2 v2.4.5
 	github.com/go-ldap/ldap/v3 v3.4.4
@@ -70,7 +71,6 @@ require (
 	github.com/bradfitz/gomemcache v0.0.0-20190329173943-551aad21a668 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.12.0 // indirect
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.4 // indirect
@@ -134,3 +134,6 @@ require (
 
 // +heroku goVersion go1.17
 // +heroku install ./
+
+// github.com/gogs/git-module => ../git-module
+replace github.com/gogs/go-gogs-client => ../go-gogs-client

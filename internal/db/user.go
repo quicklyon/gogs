@@ -1077,6 +1077,32 @@ type SearchUserOptions struct {
 
 // SearchUserByName takes keyword and part of user name to search,
 // it returns results in given range and number of total results.
+func SearchAllUser(opts *SearchUserOptions) (users []*User, _ int64, _ error) {
+	if opts.PageSize <= 0 || opts.PageSize > conf.UI.ExplorePagingNum {
+		opts.PageSize = conf.UI.ExplorePagingNum
+	}
+	if opts.Page <= 0 {
+		opts.Page = 1
+	}
+
+	users = make([]*User, 0, opts.PageSize)
+	// Append conditions
+	sess := x.Where("type = ?", opts.Type)
+
+	countSess := *sess
+	count, err := countSess.Count(new(User))
+	if err != nil {
+		return nil, 0, fmt.Errorf("Count: %v", err)
+	}
+
+	if len(opts.OrderBy) > 0 {
+		sess.OrderBy(opts.OrderBy)
+	}
+	return users, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&users)
+}
+
+// SearchUserByName takes keyword and part of user name to search,
+// it returns results in given range and number of total results.
 func SearchUserByName(opts *SearchUserOptions) (users []*User, _ int64, _ error) {
 	if opts.Keyword == "" {
 		return users, 0, nil

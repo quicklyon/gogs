@@ -364,6 +364,19 @@ func RegisterRoutes(m *macaron.Macaron) {
 				m.Patch("/wiki", reqRepoWriter(), bind(api.EditWikiOption{}), repo.Wiki)
 				m.Post("/mirror-sync", reqRepoWriter(), repo.MirrorSync)
 				m.Get("/editorconfig/:filename", context.RepoRef(), repo.GetEditorconfig)
+				m.Group("/pulls", func() {
+					m.Combo("").
+						Get(bind(api.ListPullRequestsOptions{}), repo.ListPullRequests).
+						Post(reqRepoWriter(), bind(api.CreatePullRequestOption{}), repo.CreatePullRequest)
+					m.Group("/:index", func() {
+						m.Combo("").
+							Get(repo.GetPullRequest).
+							Patch(bind(api.EditPullRequestOption{}), repo.EditPullRequest)
+						m.Combo("/merge").
+							Get(repo.IsPullRequestMerged).
+							Post(reqRepoWriter(), repo.MergePullRequest)
+					})
+				})
 			}, repoAssignment())
 		}, reqToken())
 
@@ -384,6 +397,7 @@ func RegisterRoutes(m *macaron.Macaron) {
 
 		m.Group("/admin", func() {
 			m.Group("/users", func() {
+				m.Get("", admin.SearchUser)
 				m.Post("", bind(api.CreateUserOption{}), admin.CreateUser)
 
 				m.Group("/:username", func() {
