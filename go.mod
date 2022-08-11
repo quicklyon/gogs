@@ -135,5 +135,7 @@ require (
 // +heroku goVersion go1.17
 // +heroku install ./
 
-// github.com/gogs/git-module => ../git-module
-replace github.com/gogs/go-gogs-client => github.com/quicklyon/go-gogs-client v0.0.0-20220811010405-e72d7a09a613
+replace (
+	github.com/gogs/git-module => github.com/quicklyon/git-module v0.0.0-20220811045510-0f24ece7642d
+	github.com/gogs/go-gogs-client => github.com/quicklyon/go-gogs-client v0.0.0-20220811010405-e72d7a09a613
+)

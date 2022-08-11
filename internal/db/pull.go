@@ -7,6 +7,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -196,6 +197,11 @@ func (pr *PullRequest) APIFormat() *api.PullRequest {
 	}
 
 	return apiPullRequest
+}
+
+// GetGitRefName returns git ref for hidden pull request branch
+func (pr *PullRequest) GetGitRefName() string {
+	return fmt.Sprintf("refs/pull/%d/head", pr.Index)
 }
 
 // IsChecking returns true if this pull request is still checking conflict.
@@ -983,4 +989,22 @@ func TestPullRequests() {
 
 func InitTestPullRequests() {
 	go TestPullRequests()
+}
+
+// DownloadDiffOrPatch will write the patch for the pr to the writer
+func DownloadDiffOrPatch(pr *PullRequest, w io.Writer, patch bool) error {
+	// if err := pr.LoadBaseRepo(); err != nil {
+	// 	log.Error("Unable to load base repository ID %d for pr #%d [%d]", pr.BaseRepoID, pr.Index, pr.ID)
+	// 	return err
+	// }
+
+	gitRepo, err := git.Open(pr.BaseRepo.RepoPath())
+	if err != nil {
+		return fmt.Errorf("OpenRepository: %v", err)
+	}
+	if err := gitRepo.GetDiffOrPatch(pr.MergeBase, pr.GetGitRefName(), w, patch); err != nil {
+		log.Error("Unable to get patch file from %s to %s in %s Error: %v", pr.MergeBase, pr.HeadBranch, pr.BaseRepo.FullName(), err)
+		return fmt.Errorf("Unable to get patch file from %s to %s in %s Error: %v", pr.MergeBase, pr.HeadBranch, pr.BaseRepo.FullName(), err)
+	}
+	return nil
 }

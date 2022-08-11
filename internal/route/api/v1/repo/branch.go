@@ -48,3 +48,25 @@ func ListBranches(c *context.APIContext) {
 
 	c.JSONSuccess(&apiBranches)
 }
+
+func ListProtectionsBranches(c *context.APIContext) {
+	branches, err := c.Repo.Repository.GetBranches()
+	if err != nil {
+		c.Error(err, "get branches")
+		return
+	}
+
+	var apiBranches []*api.Branch
+	for i := range branches {
+		commit, err := branches[i].GetCommit()
+		if err != nil {
+			c.Error(err, "get commit")
+			return
+		}
+		if branches[i].IsProtected {
+			apiBranches[i] = convert.ToBranch(branches[i], commit)
+		}
+	}
+
+	c.JSONSuccess(&apiBranches)
+}

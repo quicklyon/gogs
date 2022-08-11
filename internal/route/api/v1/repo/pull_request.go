@@ -441,3 +441,31 @@ func parseCompareInfo(ctx *context.APIContext, form api.CreatePullRequestOption)
 	}
 	return headUser, headRepo, headGitRepo, prInfo, baseBranch, headBranch
 }
+
+// DownloadPullDiff render a pull's raw diff
+func DownloadPullDiff(ctx *context.APIContext) {
+	DownloadPullDiffOrPatch(ctx, false)
+}
+
+// DownloadPullPatch render a pull's raw patch
+func DownloadPullPatch(ctx *context.APIContext) {
+	DownloadPullDiffOrPatch(ctx, true)
+}
+
+// DownloadPullDiffOrPatch render a pull's raw diff or patch
+func DownloadPullDiffOrPatch(ctx *context.APIContext, patch bool) {
+	pr, err := db.GetPullRequestByIndex(ctx.Repo.Repository.ID, ctx.ParamsInt64(":index"))
+	if err != nil {
+		if db.IsErrPullRequestNotExist(err) {
+			ctx.NotFound()
+		} else {
+			ctx.InternalServerError(err)
+		}
+		return
+	}
+
+	if err := db.DownloadDiffOrPatch(pr, ctx, patch); err != nil {
+		ctx.InternalServerError(err)
+		return
+	}
+}

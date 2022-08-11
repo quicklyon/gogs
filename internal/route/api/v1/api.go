@@ -290,6 +290,9 @@ func RegisterRoutes(m *macaron.Macaron) {
 					m.Get("", repo.ListBranches)
 					m.Get("/*", repo.GetBranch)
 				})
+				m.Group("/branch_protections", func() {
+					m.Get("", repo.ListProtectionsBranches)
+				})
 				m.Group("/commits", func() {
 					m.Get("/:sha", repo.GetSingleCommit)
 					m.Get("", repo.GetAllCommits)
@@ -372,6 +375,8 @@ func RegisterRoutes(m *macaron.Macaron) {
 						m.Combo("").
 							Get(repo.GetPullRequest).
 							Patch(bind(api.EditPullRequestOption{}), repo.EditPullRequest)
+						m.Get(".diff", repo.DownloadPullDiff)
+						m.Get(".patch", repo.DownloadPullPatch)
 						m.Combo("/merge").
 							Get(repo.IsPullRequestMerged).
 							Post(reqRepoWriter(), repo.MergePullRequest)
