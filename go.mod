@@ -136,4 +136,4 @@ require (
 // +heroku install ./
 
 // github.com/gogs/git-module => ../git-module
-replace github.com/gogs/go-gogs-client => ../go-gogs-client
+replace github.com/gogs/go-gogs-client => github.com/quicklyon/go-gogs-client v0.0.0-20220811010405-e72d7a09a613

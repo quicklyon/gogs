@@ -13,7 +13,7 @@ else
   export checksum='b9c5986f33a53094751b5e22ccc33e050b4a0a485658442121331cbb724e631e'
 fi
 
-wget --quiet https://github.com/go-task/task/releases/download/v3.12.1/task_linux_${arch}.tar.gz -O task_linux_${arch}.tar.gz
+wget --quiet https://ghproxy.com/https://github.com/go-task/task/releases/download/v3.12.1/task_linux_${arch}.tar.gz -O task_linux_${arch}.tar.gz
 echo "${checksum}  task_linux_${arch}.tar.gz" | sha256sum -cs
 
 tar -xzf task_linux_${arch}.tar.gz

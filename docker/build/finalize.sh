@@ -14,7 +14,7 @@ else
   export checksum='bd8be776e97ec2b911190a82d9ab3fa6c013ae6d3121eea3d0bfd5c82a0eaf8c'
 fi
 
-wget --quiet https://github.com/tianon/gosu/releases/download/1.14/gosu-${arch} -O /usr/sbin/gosu
+wget --quiet https://ghproxy.com/https://github.com/tianon/gosu/releases/download/1.14/gosu-${arch} -O /usr/sbin/gosu
 echo "${checksum}  /usr/sbin/gosu" | sha256sum -cs
 chmod +x /usr/sbin/gosu
 

@@ -1,5 +1,7 @@
-FROM golang:alpine3.14 AS binarybuilder
-RUN apk --no-cache --no-progress add --virtual \
+FROM ysicing/goa AS binarybuilder
+RUN sed -i 's#https://mirrors.aliyun.com#http://mirrors.tencent.com#g' /etc/apk/repositories \
+  && apk update \
+  && apk --no-cache --no-progress add --virtual \
   build-deps \
   build-base \
   git \
@@ -12,7 +14,9 @@ RUN ./docker/build/install-task.sh
 RUN TAGS="cert pam" task build
 
 FROM alpine:3.14
-RUN apk --no-cache --no-progress add \
+RUN sed -i 's#dl-cdn.alpinelinux.org#mirrors.tencent.com#g' /etc/apk/repositories \
+  && apk update \
+  && apk --no-cache --no-progress add \
   bash \
   ca-certificates \
   curl \
