@@ -20,6 +20,7 @@ func Search(c *context.APIContext) {
 	opts := &db.SearchUserOptions{
 		Keyword:  c.Query("q"),
 		Type:     db.UserIndividual,
+		Page:     com.StrTo(c.Query("page")).MustInt(),
 		PageSize: com.StrTo(c.Query("limit")).MustInt(),
 	}
 	if opts.PageSize == 0 {
