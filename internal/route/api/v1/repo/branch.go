@@ -8,6 +8,7 @@ import (
 	api "github.com/gogs/go-gogs-client"
 
 	"gogs.io/gogs/internal/context"
+	"gogs.io/gogs/internal/db"
 	"gogs.io/gogs/internal/route/api/v1/convert"
 )
 
@@ -50,23 +51,12 @@ func ListBranches(c *context.APIContext) {
 }
 
 func ListProtectionsBranches(c *context.APIContext) {
-	branches, err := c.Repo.Repository.GetBranches()
+	branches, err := db.GetProtectBranchesByRepoID(c.Repo.Repository.ID)
 	if err != nil {
 		c.Error(err, "get branches")
 		return
 	}
 
-	var apiBranches []*api.Branch
-	for i := range branches {
-		commit, err := branches[i].GetCommit()
-		if err != nil {
-			c.Error(err, "get commit")
-			return
-		}
-		if branches[i].IsProtected {
-			apiBranches[i] = convert.ToBranch(branches[i], commit)
-		}
-	}
 
-	c.JSONSuccess(&apiBranches)
+	c.JSONSuccess(&branches)
 }
