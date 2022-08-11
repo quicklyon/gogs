@@ -451,6 +451,8 @@ github.com/prometheus/procfs v0.6.0/go.mod h1:cz+aTbrPOrUb4q7XlbU9ygM+/jj0fzG6c1
 github.com/prometheus/procfs v0.7.3/go.mod h1:cz+aTbrPOrUb4q7XlbU9ygM+/jj0fzG6c1xBZuNvfVA=
 github.com/prometheus/procfs v0.8.0 h1:ODq8ZFEaYeCaZOJlZZdJA2AbQR98dSHSM1KW/You5mo=
 github.com/prometheus/procfs v0.8.0/go.mod h1:z7EfXMXOkbkqb9IINtpCn86r/to3BnA0uaxHdg830/4=
+github.com/quicklyon/git-module v0.0.0-20220811045510-0f24ece7642d h1:Q3P5xghBxE0td0z7x1IIt/zBrsuX/Tnsc9KGcD/e+Cc=
+github.com/quicklyon/git-module v0.0.0-20220811045510-0f24ece7642d/go.mod h1:pOYpORQGWIKWnSxlbB6OGKiqNfcLs76eCtviM/owO+c=
 github.com/quicklyon/go-gogs-client v0.0.0-20220811010405-e72d7a09a613 h1:49HRLthiPxQNpG7+SbptYznoVT0EeJOUT/177MhwfZA=
 github.com/quicklyon/go-gogs-client v0.0.0-20220811010405-e72d7a09a613/go.mod h1:Vf5J/Xg45KhsuMCPSbUedX3Na3PlwCQMrRwGVxq7BkE=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
