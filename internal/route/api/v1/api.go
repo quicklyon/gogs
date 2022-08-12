@@ -289,6 +289,7 @@ func RegisterRoutes(m *macaron.Macaron) {
 				m.Group("/branches", func() {
 					m.Get("", repo.ListBranches)
 					m.Get("/*", repo.GetBranch)
+					m.Delete("/*", repo.DeleteBranch)
 				})
 				m.Group("/branch_protections", func() {
 					m.Get("", repo.ListProtectionsBranches)

@@ -277,3 +277,20 @@ func GetProtectBranchesByRepoID(repoID int64) ([]*ProtectBranch, error) {
 	protectBranches := make([]*ProtectBranch, 0, 2)
 	return protectBranches, x.Where("repo_id = ? and protected = ?", repoID, true).Asc("name").Find(&protectBranches)
 }
+
+// IsProtectedBranch checks if branch is protected
+func (repo *Repository) IsProtectedBranch(branchName string) (bool, error) {
+	pbs, err := GetProtectBranchesByRepoID(repo.ID)
+	if err != nil {
+		return true, err
+	}
+	if len(pbs) == 0 {
+		return true, nil
+	}
+	for _, pb := range pbs {
+		if pb.Name == branchName {
+			return true, nil
+		}
+	}
+	return false, nil
+}

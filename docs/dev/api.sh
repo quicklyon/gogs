@@ -55,10 +55,20 @@
 #   'http://localhost:3000/api/v1/repos/ysicing/111111/branch_protections?token=b6e1f2742824e354b6c0ae13510d0f8fe05fe8e2' \
 #   -H 'accept: application/json'
 
-curl -X 'GET' \
-  'http://localhost:3000/api/v1/repos/ysicing/111111/pulls/6.diff?token=b6e1f2742824e354b6c0ae13510d0f8fe05fe8e2' \
-  -H 'accept: text/plain'
+# curl -X 'GET' \
+#   'http://localhost:3000/api/v1/repos/ysicing/111111/pulls/6.diff?token=b6e1f2742824e354b6c0ae13510d0f8fe05fe8e2' \
+#   -H 'accept: text/plain'
 
-curl -X 'GET' \
-  'http://localhost:3000/api/v1/repos/ysicing/111111/pulls/6.patch?token=b6e1f2742824e354b6c0ae13510d0f8fe05fe8e2' \
-  -H 'accept: text/plain'
+# curl -X 'GET' \
+#   'http://localhost:3000/api/v1/repos/ysicing/111111/pulls/6.patch?token=b6e1f2742824e354b6c0ae13510d0f8fe05fe8e2' \
+#   -H 'accept: text/plain'
+
+curl -X 'DELETE' \
+  'http://localhost:3000/api/v1/repos/ysicing/111111/branches/master?token=b6e1f2742824e354b6c0ae13510d0f8fe05fe8e2' \
+  -H 'accept: application/json'
+
+# default branch & protected branch can't delete
+
+curl -X 'DELETE' \
+  'http://localhost:3000/api/v1/repos/ysicing/111111/branches/0.12.11?token=b6e1f2742824e354b6c0ae13510d0f8fe05fe8e2' \
+  -H 'accept: application/json'
