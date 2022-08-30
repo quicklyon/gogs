@@ -3,6 +3,8 @@
 BUILD_TIME=$(date -u '+%Y-%m-%d %I:%M:%S %Z')
 BUILD_COMMIT=$(git rev-parse HEAD)
 
+go install github.com/mitchellh/gox@latest
+
 gox -osarch="darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64" \
         -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}" \
         -ldflags " \
